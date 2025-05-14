@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDB Analytics Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>PDB Analytics Dashboard</h1>
+    
+    <section>
+        <h2>Today's Most Viewed Proteins</h2>
+        <table>
+            <tr>
+                <th>PDB ID</th>
+                <th>Title</th>
+                <th>Views</th>
+            </tr>
+            {% for protein in daily_proteins %}
+            <tr>
+                <td><a href="https://www.rcsb.org/structure/{{ protein[0] }}" target="_blank">{{ protein[0] }}</a></td>
+                <td>{{ protein[1] }}</td>
+                <td>{{ protein[2] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </section>
+
+    <section>
+        <h2>Submission Trends</h2>
+        <canvas id="trendChart" width="800" height="400"></canvas>
+        <script>
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: {{ trends|map(attribute='date_recorded')|list|tojson }},
+                    datasets: [{
+                        label: 'Daily Submissions',
+                        data: {{ trends|map(attribute='submissions')|list|tojson }},
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                }
+            });
+        </script>
+    </section>
+</body>
+</html>
